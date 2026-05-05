@@ -1,0 +1,34 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS",
+      "method": "OPTIONS",
+      "path": "/?action=insights",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Insights",
+      "method": "GET",
+      "path": "/?action=insights&project=farm",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"insights": "array"}
+    },
+    {
+      "name": "Anomalies",
+      "method": "GET",
+      "path": "/?action=anomalies&sensor_id=T-01",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"sensor_id": "string"}
+    },
+    {
+      "name": "Forecast",
+      "method": "GET",
+      "path": "/?action=forecast&sensor_id=T-01&horizon=12",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"sensor_id": "string"}
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "List reports",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"items": "array"}
+    },
+    {
+      "name": "Generate PDF",
+      "method": "POST",
+      "path": "/",
+      "body": {"project_id": "farm", "format": "pdf", "period": "24h"},
+      "expectedStatus": 201,
+      "bodyMatcher": "partial",
+      "expectedBody": {"url": "string"}
+    }
+  ]
+}

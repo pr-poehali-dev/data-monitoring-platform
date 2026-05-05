@@ -1,0 +1,26 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/?action=snapshot",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Snapshot farm",
+      "method": "GET",
+      "path": "/?action=snapshot&project=farm",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"ts": "number"}
+    },
+    {
+      "name": "History 1h",
+      "method": "GET",
+      "path": "/?action=history&sensor_id=T-01&period=1h",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"sensor_id": "string"}
+    }
+  ]
+}

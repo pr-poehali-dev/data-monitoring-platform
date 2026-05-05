@@ -1,0 +1,27 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "List alerts",
+      "method": "GET",
+      "path": "/?limit=10",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"items": "array"}
+    },
+    {
+      "name": "Create alert",
+      "method": "POST",
+      "path": "/",
+      "body": {"level": "warning", "message": "Тест", "project_id": "farm"},
+      "expectedStatus": 201,
+      "bodyMatcher": "partial",
+      "expectedBody": {"id": "number"}
+    }
+  ]
+}

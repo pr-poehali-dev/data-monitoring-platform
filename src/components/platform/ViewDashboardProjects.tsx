@@ -1,13 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 import { SparkLine, Gauge, KpiCard, SectionWrapper, HealthBar, alertIcon } from "./Charts";
 import { ALERTS, PROJECTS } from "./data";
 import type { Section } from "./data";
+import { api, type AlertItem, type Snapshot } from "@/lib/api";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════════════════════════════════════════
-export function DashboardView({ cpuVal, memVal, netVal, spark }: { cpuVal: number; memVal: number; netVal: number; spark: number[] }) {
+export function DashboardView({ cpuVal, memVal, netVal, spark, snap }: { cpuVal: number; memVal: number; netVal: number; spark: number[]; snap?: Snapshot | null }) {
+  const [liveAlerts, setLiveAlerts] = useState<AlertItem[]>([]);
+  const [sparkLocal, setSparkLocal] = useState<number[]>(spark.length ? spark : Array(20).fill(cpuVal || 50));
+
+  useEffect(() => {
+    let alive = true;
+    const tick = async () => {
+      try {
+        const r = await api.listAlerts(5);
+        if (alive) setLiveAlerts(r.items);
+      } catch { /* ignore */ }
+    };
+    tick();
+    const t = setInterval(tick, 10000);
+    return () => { alive = false; clearInterval(t); };
+  }, []);
+
+  useEffect(() => {
+    if (cpuVal > 0) setSparkLocal((prev) => [...prev, cpuVal].slice(-20));
+  }, [cpuVal]);
+
+  // Берём показания фермы из snap для KPI
+  const tempA = snap?.sensors.find(s => s.id === "T-01")?.value;
+  const humB = snap?.sensors.find(s => s.id === "H-02")?.value;
+  const co2 = snap?.sensors.find(s => s.id === "CO-01")?.value;
+
+  const fallbackAlerts = liveAlerts.length === 0 ? ALERTS.slice(0, 5).map((a) => ({
+    id: a.id, level: a.level, message: a.msg, project: a.project,
+    acknowledged: false, project_id: null, sensor_id: null, created_at: null,
+  })) : liveAlerts;
   return (
     <SectionWrapper title="Главная панель" subtitle="Портфель из 8 проектов · Сколково · Газпром · Газпромнефть">
       {/* KPI row */}
@@ -47,15 +77,17 @@ export function DashboardView({ cpuVal, memVal, netVal, spark }: { cpuVal: numbe
             <span className="badge-warning text-[10px] px-2 py-0.5 rounded-full">3 активных</span>
           </div>
           <div className="flex flex-col gap-2">
-            {ALERTS.map((a) => (
+            {fallbackAlerts.slice(0, 5).map((a) => (
               <div key={a.id} className="flex items-start gap-2.5 p-2 rounded-lg" style={{ background: "var(--clr-surface2)" }}>
                 <Icon name={alertIcon(a.level)} size={13} style={{ color: a.level === "error" ? "#EF4444" : a.level === "warning" ? "#D97706" : a.level === "success" ? "#059669" : "#2563EB", marginTop: 1 }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <span className="text-[9px] badge-info px-1.5 py-0 rounded-full">{a.project}</span>
                   </div>
-                  <p className="text-xs leading-snug">{a.msg}</p>
-                  <p className="text-[10px] text-[var(--clr-muted)] mt-0.5">{a.time}</p>
+                  <p className="text-xs leading-snug">{a.message}</p>
+                  <p className="text-[10px] text-[var(--clr-muted)] mt-0.5">
+                    {a.created_at ? new Date(a.created_at).toLocaleTimeString("ru-RU") : "только что"}
+                  </p>
                 </div>
               </div>
             ))}
@@ -69,13 +101,13 @@ export function DashboardView({ cpuVal, memVal, netVal, spark }: { cpuVal: numbe
             <span className="mono text-xs text-[var(--clr-muted)]">live</span>
           </div>
           <div className="w-full overflow-hidden">
-            <SparkLine data={spark} color="#2563EB" height={60} />
+            <SparkLine data={sparkLocal} color="#2563EB" height={60} />
           </div>
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
             {[
-              { label: "CPU", val: `${spark[spark.length - 1]}%`, color: "#2563EB" },
-              { label: "RAM", val: "67%", color: "#a78bfa" },
-              { label: "RPS", val: "214", color: "#10B981" },
+              { label: "CPU", val: `${cpuVal}%`, color: "#2563EB" },
+              { label: "RAM", val: `${memVal}%`, color: "#a78bfa" },
+              { label: "Сеть", val: `${netVal}%`, color: "#10B981" },
             ].map((m) => (
               <div key={m.label} className="rounded-lg py-2" style={{ background: "var(--clr-surface2)" }}>
                 <div className="mono text-sm font-semibold" style={{ color: m.color }}>{m.val}</div>
@@ -98,9 +130,9 @@ export function DashboardView({ cpuVal, memVal, netVal, spark }: { cpuVal: numbe
         <div className="flex items-center justify-around flex-wrap gap-4">
           <Gauge value={98} max={100} label="Выполнение плана" color="#10B981" />
           <Gauge value={94} max={100} label="Точность ИИ" color="#a78bfa" />
-          <Gauge value={74} max={100} label="Вл-ть секция B" color="#D97706" />
-          <Gauge value={22} max={30} label="Температура A, °C" color="#3b82f6" />
-          <Gauge value={920} max={1200} label="CO₂ ppm" color="#10B981" />
+          <Gauge value={Math.round(humB ?? 74)} max={100} label="Влажность B, %" color={humB && humB > 70 ? "#D97706" : "#10B981"} />
+          <Gauge value={Math.round(tempA ?? 22)} max={30} label="Температура A, °C" color="#3b82f6" />
+          <Gauge value={Math.round(co2 ?? 920)} max={1200} label="CO₂ ppm" color="#10B981" />
           <Gauge value={88} max={100} label="Заряд ИБП" color="#34d399" />
         </div>
       </div>
