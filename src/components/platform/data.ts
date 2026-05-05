@@ -245,8 +245,8 @@ export const REPORTS = [
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 export const USERS = [
-  { name: "Алексей Громов", role: "Инженер (ферма)", status: "online", last: "сейчас" },
-  { name: "Марина Козлова", role: "Менеджер проектов", status: "online", last: "3 мин назад" },
-  { name: "Дмитрий Орлов", role: "Инвестор / Наблюдатель", status: "offline", last: "вчера" },
-  { name: "Светлана Ким", role: "Администратор", status: "online", last: "сейчас" },
+  { name: "Инженер фермы", role: "Инженер (ферма)", status: "online", last: "сейчас" },
+  { name: "Менеджер проектов", role: "Менеджер проектов", status: "online", last: "3 мин назад" },
+  { name: "Наблюдатель", role: "Инвестор / Наблюдатель", status: "offline", last: "вчера" },
+  { name: "Администратор", role: "Администратор", status: "online", last: "сейчас" },
 ];

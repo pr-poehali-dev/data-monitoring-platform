@@ -135,9 +135,9 @@ export default function Index() {
                 className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
                 style={{ background: "#2563EB", color: "#fff" }}
               >
-                СК
+                <Icon name="User" size={14} style={{ color: "#fff" }} />
               </div>
-              {sidebarOpen && <span className="text-xs text-[var(--clr-muted)]">Светлана К.</span>}
+              {sidebarOpen && <span className="text-xs text-[var(--clr-muted)]">Администратор</span>}
             </div>
           </div>
         </header>
