@@ -296,9 +296,9 @@ export default function Index() {
               className={`nav-item w-full flex items-center gap-3 px-4 py-2.5 text-sm ${active === item.id ? "active" : ""}`}
               title={!sidebarOpen ? item.label : undefined}
             >
-              <Icon name={item.icon} size={16} style={{ color: active === item.id ? "var(--clr-blue-light)" : "var(--clr-muted)" }} />
+              <Icon name={item.icon} size={16} style={{ color: active === item.id ? "var(--clr-blue)" : "var(--clr-muted)" }} />
               {sidebarOpen && (
-                <span className={active === item.id ? "text-white font-medium" : "text-[var(--clr-muted)]"}>
+                <span style={{ color: active === item.id ? "var(--clr-blue)" : "var(--clr-muted)", fontWeight: active === item.id ? 600 : 400 }}>
                   {item.label}
                 </span>
               )}
