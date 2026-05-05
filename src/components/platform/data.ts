@@ -1,5 +1,5 @@
 // ─── Types ────────────────────────────────────────────────────────────────────
-export type Section = "dashboard" | "projects" | "farm" | "analytics" | "ai" | "pilot" | "admin";
+export type Section = "dashboard" | "projects" | "farm" | "analytics" | "ai" | "admin";
 
 // ─── All 8 portfolio projects ─────────────────────────────────────────────────
 export const PROJECTS = [

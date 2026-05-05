@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 import type { Section } from "@/components/platform/data";
-import { DashboardView, ProjectsView, FarmView, AnalyticsView, AiView, PilotView, AdminView } from "@/components/platform/Views";
+import { DashboardView, ProjectsView, FarmView, AnalyticsView, AiView, AdminView } from "@/components/platform/Views";
 import LoginScreen from "@/components/platform/LoginScreen";
 import { useRealtime } from "@/hooks/useRealtime";
 import type { AuthUser } from "@/lib/api";
@@ -14,10 +14,10 @@ const ROLE_LABELS: Record<string, { label: string; icon: string; color: string }
 };
 
 const ROLE_ACCESS: Record<string, Section[]> = {
-  admin:    ["dashboard", "projects", "farm", "pilot", "analytics", "ai", "admin"],
-  engineer: ["dashboard", "farm", "pilot", "ai"],
-  manager:  ["dashboard", "projects", "pilot", "analytics"],
-  investor: ["dashboard", "pilot"],
+  admin:    ["dashboard", "projects", "farm", "analytics", "ai", "admin"],
+  engineer: ["dashboard", "farm", "ai"],
+  manager:  ["dashboard", "projects", "analytics"],
+  investor: ["dashboard", "projects"],
 };
 
 export default function Index() {
@@ -57,7 +57,6 @@ export default function Index() {
     { id: "dashboard", label: "Дашборд",           icon: "LayoutDashboard" },
     { id: "projects",  label: "Проекты",            icon: "FolderKanban"   },
     { id: "farm",      label: "Ферма клубники",     icon: "Sprout"         },
-    { id: "pilot",     label: "Пилот · KPI",        icon: "FlaskConical"   },
     { id: "analytics", label: "Аналитика",          icon: "BarChart3"      },
     { id: "ai",        label: "ИИ‑ядро",            icon: "Brain"          },
     { id: "admin",     label: "Администрирование",  icon: "Settings"       },
@@ -176,7 +175,6 @@ export default function Index() {
           )}
           {activeSection === "projects"  && <ProjectsView setActive={setActive} />}
           {activeSection === "farm"      && <FarmView snap={snap} />}
-          {activeSection === "pilot"     && <PilotView />}
           {activeSection === "analytics" && <AnalyticsView />}
           {activeSection === "ai"        && <AiView />}
           {activeSection === "admin"     && <AdminView />}
