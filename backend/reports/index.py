@@ -16,6 +16,32 @@ CORS = {
 }
 
 
+REPORT_SCHEMA = {
+    'project_id': {'type': str, 'enum': ['farm', 'lst', 'pipeforge', 'lignin', 'uzv', 'gashub', 'decarb', 'concrete'], 'required': True},
+    'format':     {'type': str, 'enum': ['pdf', 'csv'], 'required': True},
+    'period':     {'type': str, 'enum': ['24h', '7d', '30d'], 'required': True},
+}
+
+
+def validate_report_request(data: dict) -> str | None:
+    if not isinstance(data, dict):
+        return '$: ожидается object'
+    allowed = set(REPORT_SCHEMA.keys())
+    extra = set(data.keys()) - allowed
+    if extra:
+        return f'неизвестные поля: {", ".join(sorted(extra))}'
+    for key, rule in REPORT_SCHEMA.items():
+        if rule.get('required') and key not in data:
+            return f'{key}: обязательное поле'
+        if key in data:
+            v = data[key]
+            if not isinstance(v, rule['type']):
+                return f'{key}: ожидается {rule["type"].__name__}'
+            if 'enum' in rule and v not in rule['enum']:
+                return f'{key}: должно быть одно из {rule["enum"]}'
+    return None
+
+
 def s3_client():
     return boto3.client(
         's3',
@@ -101,7 +127,15 @@ def handler(event: dict, context) -> dict:
             return {'statusCode': 200, 'headers': CORS, 'body': json.dumps({'items': items})}
 
         if method == 'POST':
-            body = json.loads(event.get('body') or '{}')
+            try:
+                body = json.loads(event.get('body') or '{}')
+            except json.JSONDecodeError:
+                return {'statusCode': 400, 'headers': CORS, 'body': json.dumps({'error': 'Невалидный JSON'})}
+
+            schema_err = validate_report_request(body)
+            if schema_err:
+                return {'statusCode': 400, 'headers': CORS, 'body': json.dumps({'error': schema_err})}
+
             project_id = body.get('project_id', 'farm')
             fmt = body.get('format', 'pdf')
             period = body.get('period', '24h')

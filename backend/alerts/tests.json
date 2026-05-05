@@ -22,6 +22,27 @@
       "expectedStatus": 201,
       "bodyMatcher": "partial",
       "expectedBody": {"id": "number"}
+    },
+    {
+      "name": "Schema fail wrong level",
+      "method": "POST",
+      "path": "/",
+      "body": {"level": "critical", "message": "Тест"},
+      "expectedStatus": 400
+    },
+    {
+      "name": "Schema fail empty message",
+      "method": "POST",
+      "path": "/",
+      "body": {"level": "info", "message": ""},
+      "expectedStatus": 400
+    },
+    {
+      "name": "Schema fail extra field",
+      "method": "POST",
+      "path": "/",
+      "body": {"level": "info", "message": "ok", "hack": "evil"},
+      "expectedStatus": 400
     }
   ]
 }

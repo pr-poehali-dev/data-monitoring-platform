@@ -22,6 +22,20 @@
       "expectedStatus": 201,
       "bodyMatcher": "partial",
       "expectedBody": {"url": "string"}
+    },
+    {
+      "name": "Schema fail wrong format",
+      "method": "POST",
+      "path": "/",
+      "body": {"project_id": "farm", "format": "docx", "period": "24h"},
+      "expectedStatus": 400
+    },
+    {
+      "name": "Schema fail wrong project",
+      "method": "POST",
+      "path": "/",
+      "body": {"project_id": "evil", "format": "pdf", "period": "24h"},
+      "expectedStatus": 400
     }
   ]
 }

@@ -19,8 +19,45 @@
       "name": "Login wrong password",
       "method": "POST",
       "path": "/?action=login",
-      "body": {"email": "admin@datacore.ru", "password": "wrong"},
+      "body": {"email": "admin@datacore.ru", "password": "wrongpass"},
       "expectedStatus": 401
+    },
+    {
+      "name": "Login schema fail no email",
+      "method": "POST",
+      "path": "/?action=login",
+      "body": {"password": "demo1234"},
+      "expectedStatus": 400
+    },
+    {
+      "name": "Login bad email format",
+      "method": "POST",
+      "path": "/?action=login",
+      "body": {"email": "not-an-email", "password": "demo1234"},
+      "expectedStatus": 400
+    },
+    {
+      "name": "OAuth2 token success",
+      "method": "POST",
+      "path": "/?action=token",
+      "body": {"grant_type": "client_credentials", "client_id": "erp-1c-prod", "client_secret": "demo-secret-2026"},
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"access_token": "string"}
+    },
+    {
+      "name": "OAuth2 invalid client",
+      "method": "POST",
+      "path": "/?action=token",
+      "body": {"grant_type": "client_credentials", "client_id": "no-such", "client_secret": "wrongsecret"},
+      "expectedStatus": 401
+    },
+    {
+      "name": "OAuth2 wrong grant type",
+      "method": "POST",
+      "path": "/?action=token",
+      "body": {"grant_type": "password", "client_id": "erp-1c-prod", "client_secret": "demo-secret-2026"},
+      "expectedStatus": 400
     }
   ]
 }
