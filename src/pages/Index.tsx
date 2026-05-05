@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Icon from "@/components/ui/icon";
 import type { Section } from "@/components/platform/data";
-import { DashboardView, ProjectsView, FarmView, AnalyticsView, AiView, AdminView } from "@/components/platform/Views";
+import { DashboardView, ProjectsView, FarmView, AnalyticsView, AiView, PilotView, AdminView } from "@/components/platform/Views";
 
 export default function Index() {
   const [active, setActive] = useState<Section>("dashboard");
@@ -27,6 +27,7 @@ export default function Index() {
     { id: "dashboard", label: "Дашборд", icon: "LayoutDashboard" },
     { id: "projects", label: "Проекты", icon: "FolderKanban" },
     { id: "farm", label: "Ферма клубники", icon: "Sprout" },
+    { id: "pilot", label: "Пилот · KPI", icon: "FlaskConical" },
     { id: "analytics", label: "Аналитика", icon: "BarChart3" },
     { id: "ai", label: "ИИ‑ядро", icon: "Brain" },
     { id: "admin", label: "Администрирование", icon: "Settings" },
@@ -146,6 +147,7 @@ export default function Index() {
           {active === "dashboard" && <DashboardView cpuVal={cpuVal} memVal={memVal} netVal={netVal} spark={sparkRef.current} />}
           {active === "projects" && <ProjectsView setActive={setActive} />}
           {active === "farm" && <FarmView />}
+          {active === "pilot" && <PilotView />}
           {active === "analytics" && <AnalyticsView />}
           {active === "ai" && <AiView />}
           {active === "admin" && <AdminView />}
