@@ -197,6 +197,7 @@ export function AiView() {
   const [anomalies, setAnomalies] = useState<{ ts: number; value: number; z_score: number }[]>([]);
   const [forecast, setForecast] = useState<{ history: { ts: number; value: number }[]; forecast: { ts: number; value: number }[] } | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
+  const [modelDetails, setModelDetails] = useState<typeof AI_MODELS[number] | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -277,7 +278,12 @@ export function AiView() {
               </div>
               <div className="flex items-center justify-between text-xs text-[var(--clr-muted)]">
                 <span>Запусков: <span className="mono">{m.runs.toLocaleString()}</span></span>
-                <button className="text-[var(--clr-blue)] hover:underline">Подробнее</button>
+                <button
+                  onClick={() => setModelDetails(m)}
+                  className="text-[var(--clr-blue)] hover:underline flex items-center gap-1"
+                >
+                  Подробнее <Icon name="ArrowRight" size={11} />
+                </button>
               </div>
             </div>
           ))}
@@ -358,6 +364,94 @@ export function AiView() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {modelDetails && (
+        <div
+          onClick={() => setModelDetails(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
+          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg rounded-2xl overflow-hidden"
+            style={{ background: "var(--clr-surface)", border: "1px solid var(--clr-border)" }}
+          >
+            <div className="px-5 py-4 border-b flex items-start justify-between gap-3" style={{ borderColor: "var(--clr-border)" }}>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-base font-bold" style={{ fontFamily: "Montserrat, sans-serif" }}>{modelDetails.name}</h3>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${modelDetails.status === "active" ? "badge-online" : modelDetails.status === "testing" ? "badge-warning" : "badge-offline"}`}>
+                    {modelDetails.status === "active" ? "Активна" : modelDetails.status === "testing" ? "Тест" : "Устарела"}
+                  </span>
+                </div>
+                <p className="mono text-xs text-[var(--clr-muted)]">{modelDetails.ver} · обновлена {modelDetails.date}</p>
+              </div>
+              <button
+                onClick={() => setModelDetails(null)}
+                className="p-1.5 rounded-lg hover:bg-[var(--clr-surface2)]"
+              >
+                <Icon name="X" size={16} style={{ color: "var(--clr-muted)" }} />
+              </button>
+            </div>
+
+            <div className="p-5 flex flex-col gap-4">
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-lg p-3" style={{ background: "var(--clr-surface2)" }}>
+                  <div className="mono text-xl font-bold" style={{ color: modelDetails.acc >= 90 ? "#10B981" : modelDetails.acc >= 80 ? "#F59E0B" : "#EF4444" }}>{modelDetails.acc}%</div>
+                  <div className="text-[10px] text-[var(--clr-muted)] mt-0.5">Точность</div>
+                </div>
+                <div className="rounded-lg p-3" style={{ background: "var(--clr-surface2)" }}>
+                  <div className="mono text-xl font-bold" style={{ color: "#2563EB" }}>{modelDetails.runs.toLocaleString()}</div>
+                  <div className="text-[10px] text-[var(--clr-muted)] mt-0.5">Запусков</div>
+                </div>
+                <div className="rounded-lg p-3" style={{ background: "var(--clr-surface2)" }}>
+                  <div className="mono text-xl font-bold" style={{ color: "#a78bfa" }}>{modelDetails.project}</div>
+                  <div className="text-[10px] text-[var(--clr-muted)] mt-0.5">Проект</div>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold mb-2">Тренировка</p>
+                <SparkLine data={[80, 83, 85, 87, 88, 89, 91, 92, modelDetails.acc - 1, modelDetails.acc]} color="#2563EB" height={48} />
+                <p className="text-[10px] text-[var(--clr-muted)] mt-1">
+                  Прогресс точности по эпохам обучения
+                </p>
+              </div>
+
+              <div className="rounded-lg p-3" style={{ background: "var(--clr-surface2)" }}>
+                <p className="text-xs font-semibold mb-2 flex items-center gap-1.5">
+                  <Icon name="Settings" size={12} style={{ color: "var(--clr-muted)" }} /> Параметры
+                </p>
+                <div className="grid grid-cols-2 gap-y-1.5 text-[11px]">
+                  <span className="text-[var(--clr-muted)]">Алгоритм:</span>
+                  <span className="mono">Линейная регрессия + Z-score</span>
+                  <span className="text-[var(--clr-muted)]">Окно обучения:</span>
+                  <span className="mono">30 дней</span>
+                  <span className="text-[var(--clr-muted)]">Дообучение:</span>
+                  <span className="mono">каждые 6 ч (авто)</span>
+                  <span className="text-[var(--clr-muted)]">Источник данных:</span>
+                  <span className="mono">readings · live</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  className="flex-1 text-xs py-2 rounded-lg font-medium flex items-center justify-center gap-1.5"
+                  style={{ background: "#2563EB", color: "#fff" }}
+                >
+                  <Icon name="Play" size={12} /> Запустить
+                </button>
+                <button
+                  className="flex-1 text-xs py-2 rounded-lg font-medium flex items-center justify-center gap-1.5"
+                  style={{ background: "var(--clr-surface2)", color: "var(--clr-text)", border: "1px solid var(--clr-border)" }}
+                >
+                  <Icon name="RefreshCw" size={12} /> Дообучить
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
