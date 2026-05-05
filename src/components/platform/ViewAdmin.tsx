@@ -12,8 +12,8 @@ export function AdminView() {
   const eventLogs = [
     { time: "05.05 14:38", level: "info", msg: "Администратор вошёл в систему" },
     { time: "05.05 14:15", level: "warning", msg: "Датчик CO-02 (Vaisala) не отвечает по Modbus более 10 минут" },
-    { time: "05.05 13:50", level: "info", msg: "Обновлён шлюз данных: MQTT broker v3.1.1" },
-    { time: "05.05 12:00", level: "info", msg: "Запущено обучение модели Yield Predictor v1.3" },
+    { time: "05.05 13:50", level: "info", msg: "Обновлён шлюз данных: брокер MQTT v3.1.1" },
+    { time: "05.05 12:00", level: "info", msg: "Запущено обучение модели «Прогноз урожая» v1.3" },
     { time: "04.05 23:41", level: "success", msg: "Обучение завершено успешно. Точность 94.2%" },
     { time: "04.05 20:00", level: "error", msg: "Ошибка экспорта: таймаут подключения к ERP 1С" },
   ];
@@ -82,10 +82,10 @@ export function AdminView() {
       {tab === "gateway" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[
-            { name: "MQTT Broker", status: "online", host: "192.168.1.10:1883", proto: "MQTT v3.1.1", msgs: "1 240/мин" },
-            { name: "Modbus Gateway (ОВЕН)", status: "online", host: "192.168.1.20:502", proto: "Modbus TCP/RTU", msgs: "142 тч. · 1 сек" },
-            { name: "OPC UA Server", status: "online", host: "192.168.1.30:4840", proto: "OPC UA Binary", msgs: "64 тч. · 5 сек" },
-            { name: "ERP 1С Integration", status: "warning", host: "192.168.1.50:8080", proto: "REST + OAuth2", msgs: "Таймауты" },
+            { name: "Брокер MQTT", status: "online", host: "192.168.1.10:1883", proto: "MQTT v3.1.1", msgs: "1 240/мин" },
+            { name: "Шлюз Modbus (ОВЕН)", status: "online", host: "192.168.1.20:502", proto: "Modbus TCP/RTU", msgs: "142 тч. · 1 сек" },
+            { name: "Сервер OPC UA", status: "online", host: "192.168.1.30:4840", proto: "OPC UA Binary", msgs: "64 тч. · 5 сек" },
+            { name: "Интеграция с 1С", status: "warning", host: "192.168.1.50:8080", proto: "REST + OAuth2", msgs: "Таймауты" },
           ].map((gw) => (
             <div key={gw.name} className="rounded-xl p-4" style={{ background: "var(--clr-surface)", border: `1px solid ${gw.status === "warning" ? "#D9770644" : "var(--clr-border)"}` }}>
               <div className="flex items-center justify-between mb-3">
@@ -118,7 +118,7 @@ export function AdminView() {
               <div key={i} className="px-4 py-3 flex items-start gap-3 hover:bg-[var(--clr-surface2)] transition-colors">
                 <span className="mono text-[10px] text-[var(--clr-muted)] shrink-0 mt-0.5 w-32">{l.time}</span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full shrink-0 mt-0.5 ${l.level === "error" ? "badge-offline" : l.level === "warning" ? "badge-warning" : l.level === "success" ? "badge-online" : "badge-info"}`}>
-                  {l.level.toUpperCase()}
+                  {l.level === "error" ? "ОШИБКА" : l.level === "warning" ? "ВНИМАНИЕ" : l.level === "success" ? "УСПЕХ" : "ИНФО"}
                 </span>
                 <p className="text-xs">{l.msg}</p>
               </div>

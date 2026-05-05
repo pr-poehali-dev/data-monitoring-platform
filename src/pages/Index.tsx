@@ -115,7 +115,7 @@ export default function Index() {
             <div className="animate-fade-in">
               <div className="flex items-center gap-1.5 mb-1">
                 <div className="pulse-dot" style={{ background: snap ? "#10B981" : "#EF4444" }} />
-                <span>{snap ? "Данные live" : "Подключение…"}</span>
+                <span>{snap ? "Данные онлайн" : "Подключение…"}</span>
               </div>
               <div className="mono">v2.4.1 · 05.05.2026</div>
             </div>

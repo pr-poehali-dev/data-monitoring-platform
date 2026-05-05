@@ -37,9 +37,9 @@ export function FarmView({ snap }: { snap?: Snapshot | null }) {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <KpiCard label="Урожайность" value="118" unit="кг" icon="Sprout" color="#10B981" trend="up" trendVal="прогноз: 120 кг" spark={yieldData.slice(-8)} />
-        <KpiCard label="Температура A" value={t1 ? t1.toFixed(1) : "22.4"} unit="°C" icon="Thermometer" color="#3b82f6" trend="flat" trendVal="ОВЕН ТРМ138 · live" spark={[22.1, 22.3, 22.5, 22.4, 22.2, 22.4, 22.3, t1 ?? 22.4]} />
+        <KpiCard label="Температура A" value={t1 ? t1.toFixed(1) : "22.4"} unit="°C" icon="Thermometer" color="#3b82f6" trend="flat" trendVal="ОВЕН ТРМ138 · онлайн" spark={[22.1, 22.3, 22.5, 22.4, 22.2, 22.4, 22.3, t1 ?? 22.4]} />
         <KpiCard label="Влажность B" value={h2 ? h2.toFixed(0) : "74"} unit="%" icon="Droplets" color="#D97706" trend="up" trendVal={(h2 ?? 74) > 70 ? "⚠ выше нормы" : "норма"} spark={[65, 66, 68, 70, 71, 72, 73, h2 ?? 74]} />
-        <KpiCard label="CO₂" value={co ? co.toFixed(0) : "920"} unit="ppm" icon="Wind" color="#a78bfa" trend="flat" trendVal="Vaisala · live" spark={[880, 900, 910, 905, 915, 920, 918, co ?? 920]} />
+        <KpiCard label="CO₂" value={co ? co.toFixed(0) : "920"} unit="ppm" icon="Wind" color="#a78bfa" trend="flat" trendVal="Vaisala · онлайн" spark={[880, 900, 910, 905, 915, 920, 918, co ?? 920]} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">

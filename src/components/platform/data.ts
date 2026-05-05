@@ -219,11 +219,11 @@ export const ALERTS = [
 
 // ─── AI models ────────────────────────────────────────────────────────────────
 export const AI_MODELS = [
-  { name: "Yield Predictor", ver: "v1.3", acc: 94, date: "28.04.2026", status: "active", runs: 1284, project: "Ферма" },
-  { name: "Anomaly Detector", ver: "v2.1", acc: 97, date: "15.04.2026", status: "active", runs: 8920, project: "Все проекты" },
-  { name: "Climate Optimizer", ver: "v1.2", acc: 89, date: "03.03.2026", status: "testing", runs: 342, project: "Ферма" },
-  { name: "LST Quality Predictor", ver: "v0.8", acc: 86, date: "10.04.2026", status: "testing", runs: 128, project: "ЛСТ" },
-  { name: "Energy Forecast", ver: "v0.9", acc: 82, date: "10.02.2026", status: "deprecated", runs: 210, project: "Ферма" },
+  { name: "Прогноз урожая", ver: "v1.3", acc: 94, date: "28.04.2026", status: "active", runs: 1284, project: "Ферма" },
+  { name: "Детектор аномалий", ver: "v2.1", acc: 97, date: "15.04.2026", status: "active", runs: 8920, project: "Все проекты" },
+  { name: "Оптимизатор климата", ver: "v1.2", acc: 89, date: "03.03.2026", status: "testing", runs: 342, project: "Ферма" },
+  { name: "Прогноз качества ЛСТ", ver: "v0.8", acc: 86, date: "10.04.2026", status: "testing", runs: 128, project: "ЛСТ" },
+  { name: "Прогноз энергопотребления", ver: "v0.9", acc: 82, date: "10.02.2026", status: "deprecated", runs: 210, project: "Ферма" },
 ];
 
 // ─── AI recommendations ───────────────────────────────────────────────────────

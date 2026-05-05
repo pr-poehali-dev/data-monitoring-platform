@@ -212,12 +212,12 @@ export function AiView() {
   }, [tab, sensorId]);
 
   const logs = [
-    { time: "05.05 14:32", model: "Yield Predictor v1.3", event: "Прогноз: 120 кг (факт 118 кг, δ=1.7%)", type: "predict" },
-    { time: "05.05 14:15", model: "Anomaly Detector v2.1", event: "Аномалия: влажность секция B > 73%", type: "alert" },
-    { time: "05.05 13:55", model: "Climate Optimizer v1.2", event: "Рекомендация: +15% освещение секция B", type: "rec" },
-    { time: "05.05 12:00", model: "Yield Predictor v1.3", event: "Начало обучения на данных за апрель", type: "train" },
-    { time: "04.05 23:41", model: "Yield Predictor v1.3", event: "Обучение завершено. Точность: 94.2%", type: "train" },
-    { time: "04.05 18:10", model: "LST Quality Predictor v0.8", event: "Прогноз прочности: 54.2 МПа (план 56 МПа)", type: "predict" },
+    { time: "05.05 14:32", model: "Прогноз урожая v1.3", event: "Прогноз: 120 кг (факт 118 кг, δ=1.7%)", type: "predict" },
+    { time: "05.05 14:15", model: "Детектор аномалий v2.1", event: "Аномалия: влажность секция B > 73%", type: "alert" },
+    { time: "05.05 13:55", model: "Оптимизатор климата v1.2", event: "Рекомендация: +15% освещение секция B", type: "rec" },
+    { time: "05.05 12:00", model: "Прогноз урожая v1.3", event: "Начало обучения на данных за апрель", type: "train" },
+    { time: "04.05 23:41", model: "Прогноз урожая v1.3", event: "Обучение завершено. Точность: 94.2%", type: "train" },
+    { time: "04.05 18:10", model: "Прогноз качества ЛСТ v0.8", event: "Прогноз прочности: 54.2 МПа (план 56 МПа)", type: "predict" },
   ];
 
   return (

@@ -57,7 +57,7 @@ export function DashboardView({ cpuVal, memVal, netVal, spark, snap }: { cpuVal:
             <span className="badge-online text-[10px] px-2 py-0.5 rounded-full">Стабильно</span>
           </div>
           <div className="flex flex-col gap-3">
-            <HealthBar label="CPU" val={cpuVal} color="#2563EB" />
+            <HealthBar label="Процессор" val={cpuVal} color="#2563EB" />
             <HealthBar label="Память" val={memVal} color="#a78bfa" />
             <HealthBar label="Сеть" val={netVal} color="#10B981" />
             <HealthBar label="Диск" val={38} color="#F59E0B" />
@@ -98,15 +98,15 @@ export function DashboardView({ cpuVal, memVal, netVal, spark, snap }: { cpuVal:
         <div className="rounded-xl p-4" style={{ background: "var(--clr-surface)", border: "1px solid var(--clr-border)" }}>
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-semibold" style={{ fontFamily: "Montserrat, sans-serif" }}>Нагрузка платформы</span>
-            <span className="mono text-xs text-[var(--clr-muted)]">live</span>
+            <span className="mono text-xs text-[var(--clr-muted)]">онлайн</span>
           </div>
           <div className="w-full overflow-hidden">
             <SparkLine data={sparkLocal} color="#2563EB" height={60} />
           </div>
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
             {[
-              { label: "CPU", val: `${cpuVal}%`, color: "#2563EB" },
-              { label: "RAM", val: `${memVal}%`, color: "#a78bfa" },
+              { label: "Процессор", val: `${cpuVal}%`, color: "#2563EB" },
+              { label: "Память", val: `${memVal}%`, color: "#a78bfa" },
               { label: "Сеть", val: `${netVal}%`, color: "#10B981" },
             ].map((m) => (
               <div key={m.label} className="rounded-lg py-2" style={{ background: "var(--clr-surface2)" }}>
