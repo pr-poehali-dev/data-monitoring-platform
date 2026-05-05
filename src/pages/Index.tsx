@@ -3,7 +3,71 @@ import Icon from "@/components/ui/icon";
 import type { Section } from "@/components/platform/data";
 import { DashboardView, ProjectsView, FarmView, AnalyticsView, AiView, PilotView, AdminView } from "@/components/platform/Views";
 
+const ROLES = [
+  { id: "admin", label: "Администратор", desc: "Полный доступ ко всем разделам", icon: "ShieldCheck", color: "#2563EB" },
+  { id: "engineer", label: "Инженер", desc: "Датчики, ферма, алерты", icon: "Wrench", color: "#10B981" },
+  { id: "manager", label: "Менеджер проектов", desc: "Проекты, аналитика, отчёты", icon: "FolderKanban", color: "#a78bfa" },
+  { id: "investor", label: "Наблюдатель", desc: "Только просмотр дашборда и KPI", icon: "Eye", color: "#F59E0B" },
+];
+
+function LoginScreen({ onLogin }: { onLogin: (role: string) => void }) {
+  return (
+    <div
+      className="min-h-screen flex flex-col items-center justify-center p-6"
+      style={{ background: "var(--clr-bg)", color: "var(--clr-text)" }}
+    >
+      {/* Logo */}
+      <div className="flex items-center gap-3 mb-2">
+        <div
+          className="w-10 h-10 rounded-xl flex items-center justify-center"
+          style={{ background: "linear-gradient(135deg, #2563EB, #10B981)" }}
+        >
+          <Icon name="Activity" size={20} style={{ color: "#fff" }} />
+        </div>
+        <div>
+          <div className="font-bold text-lg leading-none" style={{ fontFamily: "Montserrat, sans-serif", color: "var(--clr-heading)" }}>
+            Платформа мониторинга данных
+          </div>
+          <div className="text-xs text-[var(--clr-muted)] mt-0.5">Промышленный IoT · ИИ-аналитика</div>
+        </div>
+      </div>
+
+      <p className="text-sm text-[var(--clr-muted)] mb-8 mt-4">Выберите роль для входа в демо-режиме</p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg">
+        {ROLES.map((r) => (
+          <button
+            key={r.id}
+            onClick={() => onLogin(r.id)}
+            className="flex items-start gap-3 p-4 rounded-xl text-left transition-all hover:scale-[1.02]"
+            style={{ background: "var(--clr-surface)", border: "1px solid var(--clr-border)" }}
+          >
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+              style={{ background: r.color + "22" }}
+            >
+              <Icon name={r.icon} size={16} style={{ color: r.color }} />
+            </div>
+            <div>
+              <div className="text-sm font-semibold" style={{ fontFamily: "Montserrat, sans-serif", color: "var(--clr-heading)" }}>
+                {r.label}
+              </div>
+              <div className="text-xs text-[var(--clr-muted)] mt-0.5">{r.desc}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-1.5 mt-8 text-[11px] text-[var(--clr-muted)]">
+        <div className="pulse-dot" style={{ background: "#10B981" }} />
+        <span>Все системы работают · Демо-режим</span>
+      </div>
+    </div>
+  );
+}
+
 export default function Index() {
+  const [role, setRole] = useState<string | null>(null);
   const [active, setActive] = useState<Section>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [time, setTime] = useState(new Date());
@@ -22,6 +86,10 @@ export default function Index() {
     }, 3000);
     return () => clearInterval(t);
   }, []);
+
+  if (!role) return <LoginScreen onLogin={setRole} />;
+
+  const currentRole = ROLES.find((r) => r.id === role)!;
 
   const nav: { id: Section; label: string; icon: string }[] = [
     { id: "dashboard", label: "Дашборд", icon: "LayoutDashboard" },
@@ -50,11 +118,11 @@ export default function Index() {
             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
             style={{ background: "linear-gradient(135deg, #2563EB, #10B981)" }}
           >
-            <Icon name="Cpu" size={16} style={{ color: "#fff" }} />
+            <Icon name="Activity" size={16} style={{ color: "#fff" }} />
           </div>
           {sidebarOpen && (
-            <span className="font-bold text-sm tracking-wide animate-fade-in" style={{ fontFamily: "Montserrat, sans-serif", color: "var(--clr-heading)" }}>
-              DataCore
+            <span className="font-bold text-xs leading-tight animate-fade-in" style={{ fontFamily: "Montserrat, sans-serif", color: "var(--clr-heading)" }}>
+              Платформа мониторинга данных
             </span>
           )}
         </div>
@@ -132,12 +200,19 @@ export default function Index() {
             </button>
             <div className="flex items-center gap-2 pl-3 border-l" style={{ borderColor: "var(--clr-border)" }}>
               <div
-                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-                style={{ background: "#2563EB", color: "#fff" }}
+                className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                style={{ background: currentRole.color + "22" }}
               >
-                <Icon name="User" size={14} style={{ color: "#fff" }} />
+                <Icon name={currentRole.icon} size={13} style={{ color: currentRole.color }} />
               </div>
-              {sidebarOpen && <span className="text-xs text-[var(--clr-muted)]">Администратор</span>}
+              {sidebarOpen && <span className="text-xs text-[var(--clr-muted)]">{currentRole.label}</span>}
+              <button
+                onClick={() => setRole(null)}
+                className="ml-1 p-1.5 rounded-lg hover:bg-[var(--clr-surface2)] transition-colors"
+                title="Выйти"
+              >
+                <Icon name="LogOut" size={13} style={{ color: "var(--clr-muted)" }} />
+              </button>
             </div>
           </div>
         </header>
