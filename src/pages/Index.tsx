@@ -4,11 +4,18 @@ import type { Section } from "@/components/platform/data";
 import { DashboardView, ProjectsView, FarmView, AnalyticsView, AiView, PilotView, AdminView } from "@/components/platform/Views";
 
 const ROLES = [
-  { id: "admin", label: "Администратор", desc: "Полный доступ ко всем разделам", icon: "ShieldCheck", color: "#2563EB" },
-  { id: "engineer", label: "Инженер", desc: "Датчики, ферма, алерты", icon: "Wrench", color: "#10B981" },
-  { id: "manager", label: "Менеджер проектов", desc: "Проекты, аналитика, отчёты", icon: "FolderKanban", color: "#a78bfa" },
-  { id: "investor", label: "Наблюдатель", desc: "Только просмотр дашборда и KPI", icon: "Eye", color: "#F59E0B" },
+  { id: "admin",    label: "Администратор",    desc: "Полный доступ ко всем разделам",    icon: "ShieldCheck",  color: "#2563EB" },
+  { id: "engineer", label: "Инженер",           desc: "Датчики, ферма, алерты",            icon: "Wrench",       color: "#10B981" },
+  { id: "manager",  label: "Менеджер проектов", desc: "Проекты, аналитика, отчёты",        icon: "FolderKanban", color: "#a78bfa" },
+  { id: "investor", label: "Наблюдатель",       desc: "Только просмотр дашборда и KPI",    icon: "Eye",          color: "#F59E0B" },
 ];
+
+const ROLE_ACCESS: Record<string, Section[]> = {
+  admin:    ["dashboard", "projects", "farm", "pilot", "analytics", "ai", "admin"],
+  engineer: ["dashboard", "farm", "pilot", "ai"],
+  manager:  ["dashboard", "projects", "pilot", "analytics"],
+  investor: ["dashboard", "pilot"],
+};
 
 function LoginScreen({ onLogin }: { onLogin: (role: string) => void }) {
   return (
@@ -90,16 +97,20 @@ export default function Index() {
   if (!role) return <LoginScreen onLogin={setRole} />;
 
   const currentRole = ROLES.find((r) => r.id === role)!;
+  const allowed = ROLE_ACCESS[role] ?? [];
 
-  const nav: { id: Section; label: string; icon: string }[] = [
-    { id: "dashboard", label: "Дашборд", icon: "LayoutDashboard" },
-    { id: "projects", label: "Проекты", icon: "FolderKanban" },
-    { id: "farm", label: "Ферма клубники", icon: "Sprout" },
-    { id: "pilot", label: "Пилот · KPI", icon: "FlaskConical" },
-    { id: "analytics", label: "Аналитика", icon: "BarChart3" },
-    { id: "ai", label: "ИИ‑ядро", icon: "Brain" },
-    { id: "admin", label: "Администрирование", icon: "Settings" },
+  const allNav: { id: Section; label: string; icon: string }[] = [
+    { id: "dashboard", label: "Дашборд",            icon: "LayoutDashboard" },
+    { id: "projects",  label: "Проекты",             icon: "FolderKanban"   },
+    { id: "farm",      label: "Ферма клубники",      icon: "Sprout"         },
+    { id: "pilot",     label: "Пилот · KPI",         icon: "FlaskConical"   },
+    { id: "analytics", label: "Аналитика",           icon: "BarChart3"      },
+    { id: "ai",        label: "ИИ‑ядро",             icon: "Brain"          },
+    { id: "admin",     label: "Администрирование",   icon: "Settings"       },
   ];
+
+  // если текущий раздел стал недоступен после смены роли — сбросить на dashboard
+  const activeSection = allowed.includes(active) ? active : "dashboard";
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "var(--clr-bg)", color: "var(--clr-text)" }}>
@@ -129,21 +140,26 @@ export default function Index() {
 
         {/* Nav */}
         <nav className="flex-1 py-3 overflow-y-auto">
-          {nav.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActive(item.id)}
-              className={`nav-item w-full flex items-center gap-3 px-4 py-2.5 text-sm ${active === item.id ? "active" : ""}`}
-              title={!sidebarOpen ? item.label : undefined}
-            >
-              <Icon name={item.icon} size={16} style={{ color: active === item.id ? "var(--clr-blue)" : "var(--clr-muted)" }} />
-              {sidebarOpen && (
-                <span style={{ color: active === item.id ? "var(--clr-blue)" : "var(--clr-muted)", fontWeight: active === item.id ? 600 : 400 }}>
-                  {item.label}
-                </span>
-              )}
-            </button>
-          ))}
+          {allNav.map((item) => {
+            const accessible = allowed.includes(item.id);
+            const isActive = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => accessible && setActive(item.id)}
+                className={`nav-item w-full flex items-center gap-3 px-4 py-2.5 text-sm ${isActive ? "active" : ""} ${!accessible ? "opacity-35 cursor-not-allowed" : ""}`}
+                title={!sidebarOpen ? item.label : !accessible ? `Недоступно для роли «${currentRole.label}»` : undefined}
+                disabled={!accessible}
+              >
+                <Icon name={accessible ? item.icon : "Lock"} size={16} style={{ color: isActive ? "var(--clr-blue)" : "var(--clr-muted)" }} />
+                {sidebarOpen && (
+                  <span style={{ color: isActive ? "var(--clr-blue)" : "var(--clr-muted)", fontWeight: isActive ? 600 : 400 }}>
+                    {item.label}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </nav>
 
         {/* Footer */}
@@ -180,7 +196,7 @@ export default function Index() {
         >
           <div>
             <h1 className="text-base font-bold" style={{ fontFamily: "Montserrat, sans-serif" }}>
-              {nav.find((n) => n.id === active)?.label}
+              {allNav.find((n) => n.id === activeSection)?.label}
             </h1>
             <p className="text-xs text-[var(--clr-muted)] mono">
               {time.toLocaleDateString("ru-RU", { day: "2-digit", month: "long", year: "numeric" })} &nbsp;·&nbsp;
@@ -218,14 +234,14 @@ export default function Index() {
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto p-6" key={active}>
-          {active === "dashboard" && <DashboardView cpuVal={cpuVal} memVal={memVal} netVal={netVal} spark={sparkRef.current} />}
-          {active === "projects" && <ProjectsView setActive={setActive} />}
-          {active === "farm" && <FarmView />}
-          {active === "pilot" && <PilotView />}
-          {active === "analytics" && <AnalyticsView />}
-          {active === "ai" && <AiView />}
-          {active === "admin" && <AdminView />}
+        <main className="flex-1 overflow-y-auto p-6" key={activeSection}>
+          {activeSection === "dashboard" && <DashboardView cpuVal={cpuVal} memVal={memVal} netVal={netVal} spark={sparkRef.current} />}
+          {activeSection === "projects"  && <ProjectsView setActive={setActive} />}
+          {activeSection === "farm"      && <FarmView />}
+          {activeSection === "pilot"     && <PilotView />}
+          {activeSection === "analytics" && <AnalyticsView />}
+          {activeSection === "ai"        && <AiView />}
+          {activeSection === "admin"     && <AdminView />}
         </main>
       </div>
     </div>
