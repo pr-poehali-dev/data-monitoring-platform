@@ -4,7 +4,7 @@ import type { Section } from "@/components/platform/data";
 import { DashboardView, ProjectsView, FarmView, AnalyticsView, AiView, AdminView } from "@/components/platform/Views";
 import LoginScreen from "@/components/platform/LoginScreen";
 import { useRealtime } from "@/hooks/useRealtime";
-import type { AuthUser } from "@/lib/api";
+import { api, type AuthUser } from "@/lib/api";
 
 const ROLE_LABELS: Record<string, { label: string; icon: string; color: string }> = {
   admin:    { label: "Администратор",    icon: "ShieldCheck",  color: "#2563EB" },
@@ -31,6 +31,15 @@ export default function Index() {
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(t);
+  }, []);
+
+  // ─── Автономный движок: будим cron-задачи на бэке каждые 30 сек ──────────
+  useEffect(() => {
+    let alive = true;
+    const tick = () => { if (alive) api.automationTick().catch(() => {}); };
+    tick();
+    const t = setInterval(tick, 30000);
+    return () => { alive = false; clearInterval(t); };
   }, []);
 
   // восстановление сессии

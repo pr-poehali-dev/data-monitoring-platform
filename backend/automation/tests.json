@@ -1,0 +1,57 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "List jobs",
+      "method": "GET",
+      "path": "/?action=jobs",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"items": "array"}
+    },
+    {
+      "name": "List runs",
+      "method": "GET",
+      "path": "/?action=runs",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"items": "array"}
+    },
+    {
+      "name": "Tick (run due)",
+      "method": "GET",
+      "path": "/?action=tick",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"executed": "number"}
+    },
+    {
+      "name": "Run now poll_sensors",
+      "method": "POST",
+      "path": "/?action=run_now",
+      "body": {"code": "poll_sensors"},
+      "expectedStatus": 200,
+      "bodyMatcher": "partial",
+      "expectedBody": {"status": "string"}
+    },
+    {
+      "name": "Run now unknown",
+      "method": "POST",
+      "path": "/?action=run_now",
+      "body": {"code": "no-such-job"},
+      "expectedStatus": 400
+    },
+    {
+      "name": "Toggle job",
+      "method": "PATCH",
+      "path": "/",
+      "body": {"id": 1, "is_enabled": true},
+      "expectedStatus": 200
+    }
+  ]
+}

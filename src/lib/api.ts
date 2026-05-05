@@ -1,10 +1,11 @@
 // API-клиент для Платформы мониторинга данных
 const URLS = {
-  auth:     "https://functions.poehali.dev/23c7754a-bfb1-4ba5-8e5f-d412e7b22b8d",
-  realtime: "https://functions.poehali.dev/895d38a7-64d7-4c72-ae8c-2d94d1f44fda",
-  alerts:   "https://functions.poehali.dev/8340c270-703c-48c2-9ab2-51106e41708f",
-  reports:  "https://functions.poehali.dev/cf81fc96-c7c3-41b7-99ba-3fb294b24e75",
-  ai:       "https://functions.poehali.dev/de6b3a03-9003-4ed7-b3b1-214cd8d101db",
+  auth:       "https://functions.poehali.dev/23c7754a-bfb1-4ba5-8e5f-d412e7b22b8d",
+  realtime:   "https://functions.poehali.dev/895d38a7-64d7-4c72-ae8c-2d94d1f44fda",
+  alerts:     "https://functions.poehali.dev/8340c270-703c-48c2-9ab2-51106e41708f",
+  reports:    "https://functions.poehali.dev/cf81fc96-c7c3-41b7-99ba-3fb294b24e75",
+  ai:         "https://functions.poehali.dev/de6b3a03-9003-4ed7-b3b1-214cd8d101db",
+  automation: "https://functions.poehali.dev/0557bfc6-6191-4346-a143-7bdafffd7923",
 } as const;
 
 export type AuthUser = { id: number; email: string; full_name: string; role: string };
@@ -111,4 +112,50 @@ export const api = {
       forecast: { ts: number; value: number }[];
     }>;
   },
+
+  async automationTick() {
+    const r = await fetch(`${URLS.automation}?action=tick`, { headers: authHeaders() });
+    return r.json() as Promise<{ executed: number; results: { code: string; status: string; message: string }[] }>;
+  },
+
+  async automationJobs() {
+    const r = await fetch(`${URLS.automation}?action=jobs`, { headers: authHeaders() });
+    return r.json() as Promise<{ items: AutomationJob[] }>;
+  },
+
+  async automationRuns(limit = 30) {
+    const r = await fetch(`${URLS.automation}?action=runs&limit=${limit}`, { headers: authHeaders() });
+    return r.json() as Promise<{ items: AutomationRun[] }>;
+  },
+
+  async automationToggle(id: number, is_enabled: boolean, interval_seconds?: number) {
+    const r = await fetch(URLS.automation, {
+      method: "PATCH", headers: authHeaders(),
+      body: JSON.stringify({ id, is_enabled, ...(interval_seconds ? { interval_seconds } : {}) }),
+    });
+    return r.json();
+  },
+
+  async automationRunNow(code: string) {
+    const r = await fetch(`${URLS.automation}?action=run_now`, {
+      method: "POST", headers: authHeaders(),
+      body: JSON.stringify({ code }),
+    });
+    return r.json();
+  },
+};
+
+export type AutomationJob = {
+  id: number; code: string; name: string; description: string | null;
+  interval_seconds: number; is_enabled: boolean;
+  last_run_at: string | null; last_status: string | null; last_message: string | null;
+  next_run_at: string | null;
+  total_runs: number; total_failures: number;
+};
+
+export type AutomationRun = {
+  id: number; code: string; name: string;
+  started_at: string | null; finished_at: string | null;
+  status: string; message: string | null;
+  records_processed: number | null; duration_ms: number | null;
 };

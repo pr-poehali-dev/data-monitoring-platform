@@ -2,11 +2,12 @@ import { useState } from "react";
 import Icon from "@/components/ui/icon";
 import { SectionWrapper } from "./Charts";
 import { USERS } from "./data";
+import AutomationView from "./AutomationView";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ADMIN
 // ═══════════════════════════════════════════════════════════════════════════════
-type AdminTab = "users" | "gateway" | "storage" | "security" | "logs" | "spec" | "api";
+type AdminTab = "users" | "gateway" | "storage" | "security" | "logs" | "spec" | "api" | "automation";
 
 const SPEC_BLOCKS: {
   id: string; title: string; icon: string; color: string;
@@ -21,6 +22,7 @@ const SPEC_BLOCKS: {
       { label: "Modbus RTU/TCP", status: "ok", note: "Шлюз ОВЕН, 142 точки, опрос 1 сек" },
       { label: "Нормализация JSON / XML‑схем", status: "ok", note: "JSON Schema на всех точках входа" },
       { label: "Буферизация при потере связи", status: "ok", note: "Локальный буфер шлюза 24 ч + ретрансляция" },
+      { label: "Автономный сбор (cron)", status: "ok", note: "7 задач: опрос, аномалии, алерты, отчёты — без участия оператора" },
     ],
   },
   {
@@ -86,7 +88,7 @@ export function AdminView() {
   return (
     <SectionWrapper title="Администрирование" subtitle="Архитектура · Пользователи · Шлюз · Хранилище · Безопасность · Журнал">
       <div className="flex gap-2 mb-5 flex-wrap">
-        {(["spec", "users", "gateway", "storage", "api", "security", "logs"] as const).map((t) => (
+        {(["spec", "automation", "users", "gateway", "storage", "api", "security", "logs"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -94,6 +96,7 @@ export function AdminView() {
             style={tab === t ? { background: "#2563EB", color: "#fff" } : { background: "var(--clr-surface)", color: "var(--clr-muted)", border: "1px solid var(--clr-border)" }}
           >
             {t === "spec" ? "Архитектура (ТЗ)"
+              : t === "automation" ? "Автоматизация"
               : t === "users" ? "Пользователи"
               : t === "gateway" ? "Шлюз данных"
               : t === "storage" ? "Хранилище"
@@ -110,10 +113,10 @@ export function AdminView() {
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                 <div className="text-sm font-semibold" style={{ fontFamily: "Montserrat, sans-serif" }}>Соответствие техническому заданию</div>
-                <div className="text-xs text-[var(--clr-muted)] mt-1">Полная карта архитектуры: 6 разделов, 30 пунктов</div>
+                <div className="text-xs text-[var(--clr-muted)] mt-1">Полная карта архитектуры: 6 разделов, 31 пункт</div>
               </div>
               <div className="flex gap-2 text-[10px]">
-                <span className="badge-online px-2 py-1 rounded-full">Готово · 29</span>
+                <span className="badge-online px-2 py-1 rounded-full">Готово · 30</span>
                 <span className="badge-warning px-2 py-1 rounded-full">В процессе · 1</span>
                 <span className="badge-info px-2 py-1 rounded-full">Запланировано · 0</span>
               </div>
@@ -231,6 +234,8 @@ export function AdminView() {
           ))}
         </div>
       )}
+
+      {tab === "automation" && <AutomationView />}
 
       {tab === "api" && (
         <div className="flex flex-col gap-4">
